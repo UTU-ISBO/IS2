@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Autoevaluación · GitHub Roadmap</title>
+<style>
+  :root{
+    --bg:#0D1117;
+    --panel:#161B22;
+    --panel-2:#1C2129;
+    --border:#30363D;
+    --text:#E6EDF3;
+    --muted:#8B949E;
+    --white:#FFFFFF;
+    --correct:#3FB950;
+    --incorrect:#F85149;
+    --accent:#2EA44F; /* overridden per module */
+    --accent-soft: rgba(46,164,79,0.15);
+    --font-display: Cambria, Georgia, 'Times New Roman', serif;
+    --font-body: Calibri, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --font-mono: 'Courier New', Courier, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:900px;
+    margin:0 auto;
+    padding:2.5rem 1.5rem 4rem;
+  }
+  @media (max-width:600px){
+    .wrap{padding:1.5rem 1rem 3rem;}
+  }
+  a{color:inherit;}
+  button{font-family:inherit;cursor:pointer;}
+  button:focus-visible, .opt:focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:2px;
+  }
+  .view{display:none;}
+  .view.active{display:block;}
+
+  /* ---------- Header / eyebrow ---------- */
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:0.75rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin:0 0 0.6rem;
+  }
+  .eyebrow strong{color:var(--accent);}
+  h1.title{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:2.6rem;
+    line-height:1.08;
+    margin:0 0 0.6rem;
+    color:var(--white);
+  }
+  @media (max-width:600px){ h1.title{font-size:2rem;} }
+  .subtitle{
+    color:var(--muted);
+    font-size:1.05rem;
+    max-width:44rem;
+    line-height:1.5;
+    margin:0 0 2.2rem;
+  }
+
+  /* ---------- Home: overall trail ---------- */
+  .overall-trail{
+    display:flex;
+    align-items:center;
+    gap:0.4rem;
+    margin-bottom:2.4rem;
+  }
+  .overall-trail .seg{
+    flex:1;
+    height:6px;
+    border-radius:3px;
+    background:var(--panel-2);
+    overflow:hidden;
+  }
+  .overall-trail .seg i{
+    display:block;
+    height:100%;
+    width:0%;
+    border-radius:3px;
+    transition:width .5s ease;
+  }
+  .overall-label{
+    font-family:var(--font-mono);
+    font-size:0.75rem;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+
+  /* ---------- Module cards ---------- */
+  .modules{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:1rem;
+  }
+  @media (max-width:760px){
+    .modules{grid-template-columns:1fr;}
+  }
+  .card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:1.5rem 1.3rem 1.4rem;
+    display:flex;
+    flex-direction:column;
+    min-height:280px;
+  }
+  .card .num{
+    width:2.5rem;height:2.5rem;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:1.15rem;
+    color:var(--bg);
+    margin-bottom:1rem;
+  }
+  .card h3{
+    font-family:var(--font-display);
+    font-size:1.3rem;
+    margin:0 0 0.35rem;
+    color:var(--white);
+  }
+  .card .card-sub{
+    font-size:0.85rem;
+    color:var(--muted);
+    margin:0 0 0.9rem;
+    line-height:1.45;
+    flex:1;
+  }
+  .card .meta{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    color:var(--muted);
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:0.9rem;
+    padding-top:0.8rem;
+    border-top:1px solid var(--border);
+  }
+  .card .meta .best{color:var(--text);}
+  .btn{
+    border:none;
+    border-radius:8px;
+    padding:0.65rem 1rem;
+    font-weight:700;
+    font-size:0.9rem;
+    text-align:center;
+    transition:transform .15s ease, filter .15s ease;
+  }
+  .btn:hover{filter:brightness(1.08);}
+  .btn:active{transform:scale(0.98);}
+  .btn-primary{color:var(--bg);}
+  .btn-ghost{
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--text);
+  }
+  .btn-ghost:hover{border-color:var(--muted);}
+  .btn-row{display:flex;gap:0.6rem;flex-wrap:wrap;}
+
+  /* ---------- Quiz view ---------- */
+  .quiz-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:1.4rem;
+    gap:1rem;
+  }
+  .back-link{
+    font-family:var(--font-mono);
+    font-size:0.78rem;
+    color:var(--muted);
+    background:none;border:none;
+    padding:0.3rem 0;
+    display:flex;align-items:center;gap:0.3rem;
+  }
+  .back-link:hover{color:var(--text);}
+  .module-tag{
+    font-family:var(--font-mono);
+    font-size:0.75rem;
+    padding:0.3rem 0.7rem;
+    border-radius:999px;
+    border:1px solid var(--accent);
+    color:var(--text);
+  }
+
+  /* commit-trail progress, echoes the branch diagrams */
+  .trail{
+    display:flex;
+    align-items:center;
+    margin:0 0 2rem;
+  }
+  .trail .node{
+    width:14px;height:14px;
+    border-radius:50%;
+    background:var(--panel-2);
+    border:2px solid var(--border);
+    flex:none;
+    position:relative;
+    transition:background .2s, border-color .2s;
+  }
+  .trail .node.current{
+    background:var(--accent);
+    border-color:var(--accent);
+    box-shadow:0 0 0 4px var(--accent-soft);
+  }
+  .trail .node.correct{background:var(--correct);border-color:var(--correct);}
+  .trail .node.incorrect{background:var(--incorrect);border-color:var(--incorrect);}
+  .trail .line{
+    flex:1;
+    height:2px;
+    background:var(--border);
+    min-width:8px;
+  }
+  .trail .line.done{background:var(--accent);}
+
+  .q-count{
+    font-family:var(--font-mono);
+    font-size:0.78rem;
+    color:var(--muted);
+    margin:0 0 0.5rem;
+  }
+  .q-text{
+    font-family:var(--font-display);
+    font-size:1.5rem;
+    line-height:1.35;
+    color:var(--white);
+    margin:0 0 1.6rem;
+    max-width:38rem;
+  }
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap:0.65rem;
+    margin-bottom:1.4rem;
+  }
+  .opt{
+    text-align:left;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:0.85rem 1rem;
+    font-size:0.98rem;
+    color:var(--text);
+    display:flex;
+    align-items:flex-start;
+    gap:0.7rem;
+    transition:border-color .15s, background .15s;
+  }
+  .opt:hover:not(.locked){border-color:var(--accent);}
+  .opt .letter{
+    font-family:var(--font-mono);
+    font-weight:700;
+    color:var(--muted);
+    flex:none;
+  }
+  .opt.selected-correct{
+    border-color:var(--correct);
+    background:rgba(63,185,80,0.12);
+  }
+  .opt.selected-incorrect{
+    border-color:var(--incorrect);
+    background:rgba(248,81,73,0.12);
+  }
+  .opt.reveal-correct{
+    border-color:var(--correct);
+  }
+  .opt.locked{cursor:default;}
+
+  .feedback{
+    border-radius:10px;
+    padding:0.9rem 1rem;
+    font-size:0.92rem;
+    line-height:1.5;
+    margin-bottom:1.2rem;
+    display:none;
+    border:1px solid var(--border);
+    background:var(--panel-2);
+  }
+  .feedback.show{display:block;}
+  .feedback .fb-title{
+    font-weight:700;
+    font-family:var(--font-mono);
+    font-size:0.78rem;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    margin-bottom:0.35rem;
+  }
+  .feedback.ok .fb-title{color:var(--correct);}
+  .feedback.no .fb-title{color:var(--incorrect);}
+
+  .quiz-actions{display:flex;justify-content:flex-end;}
+
+  /* ---------- Result view ---------- */
+  .result-hero{
+    text-align:center;
+    padding:2.2rem 1rem 2rem;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:16px;
+    margin-bottom:1.6rem;
+  }
+  .result-score{
+    font-family:var(--font-display);
+    font-size:4rem;
+    font-weight:700;
+    color:var(--white);
+    margin:0;
+    line-height:1;
+  }
+  .result-score span{font-size:1.8rem;color:var(--muted);}
+  .result-badge{
+    display:inline-block;
+    margin-top:0.9rem;
+    padding:0.4rem 1rem;
+    border-radius:999px;
+    font-family:var(--font-mono);
+    font-size:0.85rem;
+    font-weight:700;
+  }
+  .review{
+    display:flex;
+    flex-direction:column;
+    gap:0.7rem;
+    margin-bottom:1.6rem;
+  }
+  .review-item{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:0.9rem 1rem;
+  }
+  .review-item .rq{
+    font-size:0.92rem;
+    color:var(--text);
+    margin:0 0 0.4rem;
+    font-weight:700;
+  }
+  .review-item .ra{
+    font-size:0.85rem;
+    color:var(--muted);
+    margin:0;
+  }
+  .review-item .ra strong{color:var(--correct);}
+
+  footer.foot{
+    margin-top:3rem;
+    color:var(--muted);
+    font-size:0.75rem;
+    text-align:center;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ HOME ============ -->
+  <section id="view-home" class="view active">
+    <p class="eyebrow"><strong>Autoevaluación</strong> · GitHub Roadmap</p>
+    <h1 class="title">¿Cuánto quedó del roadmap?</h1>
+    <p class="subtitle">Tres módulos cortos, uno por nivel. Elegí uno para repasar los conceptos, comandos y flujos que viste en las diapositivas.</p>
+
+    <div class="overall-trail">
+      <div class="overall-label" id="overall-label">0 / 3 módulos completados</div>
+      <div class="seg"><i id="seg-fill" style="background:#8B949E"></i></div>
+    </div>
+
+    <div class="modules" id="modules"></div>
+
+    <footer class="foot">Tu progreso se guarda en este dispositivo. Podés repetir cualquier módulo cuando quieras.</footer>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="view-quiz" class="view">
+    <div class="quiz-top">
+      <button class="back-link" id="btn-exit">← Volver al menú</button>
+      <span class="module-tag" id="quiz-tag"></span>
+    </div>
+
+    <div class="trail" id="trail"></div>
+
+    <p class="q-count" id="q-count"></p>
+    <h2 class="q-text" id="q-text"></h2>
+    <div class="options" id="options"></div>
+
+    <div class="feedback" id="feedback">
+      <p class="fb-title" id="fb-title"></p>
+      <p id="fb-text" style="margin:0;"></p>
+    </div>
+
+    <div class="quiz-actions">
+      <button class="btn btn-primary" id="btn-next" style="display:none;">Siguiente</button>
+    </div>
+  </section>
+
+  <!-- ============ RESULT ============ -->
+  <section id="view-result" class="view">
+    <p class="eyebrow" id="result-tag"></p>
+    <div class="result-hero">
+      <p class="result-score" id="result-score">0<span>/10</span></p>
+      <div class="result-badge" id="result-badge"></div>
+    </div>
+
+    <div id="review" class="review"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn-retry">Reintentar este módulo</button>
+      <button class="btn btn-ghost" id="btn-next-module" style="display:none;">Siguiente módulo →</button>
+      <button class="btn btn-ghost" id="btn-menu">Volver al menú</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------------------------------------------------------------
+  // Content: three modules mirroring the GitHub Roadmap levels
+  // ---------------------------------------------------------------
+  const MODULES = [
+    {
+      id: "nivel1",
+      num: "1",
+      title: "Nivel 1 · Principiante",
+      sub: "Git vs GitHub, repositorios, branches, Issues y el concepto de dev/stage/prod.",
+      accent: "#2EA44F",
+      accentSoft: "rgba(46,164,79,0.15)",
+      questions: [
+        {
+          q: "¿Cuál afirmación describe mejor la diferencia entre Git y GitHub?",
+          options: [
+            "Son lo mismo, solo cambia el nombre",
+            "Git es el sistema de control de versiones; GitHub es la plataforma en la nube que aloja tus repositorios",
+            "GitHub funciona sin necesidad de Git",
+            "Git solo funciona dentro de GitHub"
+          ],
+          correct: 1,
+          explain: "Git corre en tu computadora y no necesita internet. GitHub es donde alojás, respaldás y compartís tus repositorios de Git."
+        },
+        {
+          q: "¿Qué comando creás un repositorio nuevo en la carpeta actual?",
+          options: ["git start", "git new", "git init", "git create"],
+          correct: 2,
+          explain: "git init convierte la carpeta actual en un repositorio Git vacío."
+        },
+        {
+          q: "¿Qué comando usás para obtener una copia local de un repositorio que ya existe en GitHub?",
+          options: ["git clone", "git copy", "git fetch", "git pull"],
+          correct: 0,
+          explain: "git clone descarga una copia completa del repositorio remoto a tu computadora."
+        },
+        {
+          q: "¿Para qué sirve el archivo .gitignore?",
+          options: [
+            "Para documentar el proyecto",
+            "Para decirle a Git qué archivos o carpetas no debe rastrear",
+            "Para guardar contraseñas de forma segura",
+            "Para configurar las branches"
+          ],
+          correct: 1,
+          explain: ".gitignore lista los patrones de archivos que Git debe ignorar, como carpetas de dependencias o archivos temporales."
+        },
+        {
+          q: "¿Qué hace exactamente git add .?",
+          options: [
+            "Sube los cambios a GitHub",
+            "Crea una nueva branch",
+            "Agrega los cambios al área de staging para el próximo commit",
+            "Descarga los últimos cambios del repositorio remoto"
+          ],
+          correct: 2,
+          explain: "git add prepara los cambios (los pasa al staging) para que queden incluidos en el siguiente commit."
+        },
+        {
+          q: "Después de hacer commit, ¿qué comando subís tus cambios a GitHub?",
+          options: ["git upload", "git push", "git send", "git commit --remote"],
+          correct: 1,
+          explain: "git push envía los commits locales al repositorio remoto en GitHub."
+        },
+        {
+          q: "¿Cuál es el propósito principal de trabajar con branches?",
+          options: [
+            "Duplicar el repositorio completo",
+            "Poder trabajar en algo nuevo sin afectar el código de main",
+            "Borrar el historial de commits",
+            "Ignorar archivos no deseados"
+          ],
+          correct: 1,
+          explain: "Una branch te deja desarrollar en paralelo sin tocar main hasta que el cambio esté listo para fusionarse."
+        },
+        {
+          q: "¿Qué es un Pull Request?",
+          options: [
+            "Un comando de Git para traer cambios remotos",
+            "Una solicitud para fusionar los cambios de una branch, generalmente con revisión del equipo",
+            "Una forma de eliminar una branch",
+            "Un tipo de Issue"
+          ],
+          correct: 1,
+          explain: "El Pull Request es el mecanismo de GitHub para proponer, discutir y revisar cambios antes de fusionarlos."
+        },
+        {
+          q: "¿Qué es un Issue en GitHub?",
+          options: [
+            "Un error del sistema de GitHub",
+            "Una tarea, bug o idea reportada sobre el proyecto",
+            "Un tipo de branch",
+            "Un archivo de configuración"
+          ],
+          correct: 1,
+          explain: "Los Issues sirven para registrar y hacer seguimiento de tareas, bugs o mejoras del proyecto."
+        },
+        {
+          q: "En el esquema dev → stage → prod, ¿qué ambiente usan las personas usuarias reales?",
+          options: ["dev", "stage", "prod", "Los tres al mismo tiempo"],
+          correct: 2,
+          explain: "prod (producción) es el ambiente real; dev y stage sirven para desarrollar y probar antes de llegar ahí."
+        }
+      ]
+    },
+    {
+      id: "nivel2",
+      num: "2",
+      title: "Nivel 2 · Intermedio",
+      sub: "Forks, remotes, merge vs rebase, conflictos, branches protegidas y Environments.",
+      accent: "#539BF5",
+      accentSoft: "rgba(83,155,245,0.15)",
+      questions: [
+        {
+          q: "¿Qué es un fork en GitHub?",
+          options: [
+            "Una rama especial de main",
+            "Tu propia copia de un repositorio ajeno, alojada en tu cuenta de GitHub",
+            "Un comando para borrar un repositorio",
+            "Un tipo de Pull Request"
+          ],
+          correct: 1,
+          explain: "Un fork crea una copia del repositorio en tu cuenta, sobre la que podés trabajar sin afectar el original."
+        },
+        {
+          q: "En un flujo de trabajo con fork, ¿qué remote suele apuntar al repositorio original?",
+          options: ["origin", "upstream", "main", "source"],
+          correct: 1,
+          explain: "origin apunta a tu fork; upstream apunta al repositorio original, y te sirve para mantenerte actualizado."
+        },
+        {
+          q: "¿Cuál es la diferencia principal entre merge y rebase?",
+          options: [
+            "Son exactamente lo mismo",
+            "merge crea un commit de fusión que une los historiales; rebase reescribe los commits de la branch encima de main",
+            "rebase borra los commits de la branch",
+            "merge solo funciona en GitHub, rebase solo en la terminal"
+          ],
+          correct: 1,
+          explain: "merge conserva ambos historiales tal cual pasaron; rebase los reordena para dejar una sola línea de tiempo."
+        },
+        {
+          q: "¿Qué comando cancela un rebase en curso y volvés al estado anterior?",
+          options: ["git rebase --stop", "git rebase --undo", "git rebase --abort", "git reset --hard rebase"],
+          correct: 2,
+          explain: "git rebase --abort deshace el rebase en curso y te devuelve al estado previo a empezarlo."
+        },
+        {
+          q: "En un archivo con un conflicto, ¿qué indican los símbolos <<<<<<< y >>>>>>>?",
+          options: [
+            "Comentarios del código",
+            "Los límites de las versiones en conflicto que Git no pudo combinar solo",
+            "Errores de sintaxis del lenguaje",
+            "El final del archivo"
+          ],
+          correct: 1,
+          explain: "Esas marcas delimitan las dos versiones en conflicto; hay que elegir o combinar el contenido y borrar las marcas."
+        },
+        {
+          q: "¿Cuál de estas NO es una regla típica de una branch protegida?",
+          options: [
+            "Requerir al menos una aprobación antes de mergear",
+            "Requerir que los status checks pasen",
+            "Permitir libremente el force-push a cualquier persona",
+            "No permitir borrar la branch"
+          ],
+          correct: 2,
+          explain: "Una branch protegida justamente restringe el force-push; permitirlo libremente va en contra de su propósito."
+        },
+        {
+          q: "¿Para qué sirven las plantillas de Issues (Issue templates)?",
+          options: [
+            "Para bloquear la creación de nuevos Issues",
+            "Para estandarizar la información que se pide en cada tipo de reporte",
+            "Para asignar automáticamente un revisor de código",
+            "Para cerrar Issues viejos automáticamente"
+          ],
+          correct: 1,
+          explain: "Las plantillas guían a quien reporta para que incluya la información necesaria desde el principio."
+        },
+        {
+          q: "¿Qué logra la automatización en GitHub Projects?",
+          options: [
+            "Genera código automáticamente",
+            "Mueve las tarjetas de estado (Todo/In Progress/Done) según eventos como abrir o mergear un PR",
+            "Elimina Issues duplicados",
+            "Crea branches nuevas automáticamente"
+          ],
+          correct: 1,
+          explain: "Los workflows de automatización actualizan el estado de las tarjetas según lo que pasa con el Issue o el PR vinculado."
+        },
+        {
+          q: "¿Qué controla principalmente un GitHub Environment (como production)?",
+          options: [
+            "El lenguaje de programación del repositorio",
+            "Reglas de aprobación y secrets propios de ese ambiente antes de permitir un deploy",
+            "El nombre del repositorio",
+            "La cantidad de colaboradores"
+          ],
+          correct: 1,
+          explain: "Cada Environment puede exigir revisores, tener su propia lista de secrets y reglas antes de desplegar."
+        },
+        {
+          q: "En un workflow de Actions, ¿qué efecto tiene declarar environment: production en un job?",
+          options: [
+            "Ninguno, es solo un comentario",
+            "El job solo corre si se cumplen las reglas y aprobaciones configuradas para ese ambiente",
+            "Borra el ambiente de staging",
+            "Cambia el lenguaje del proyecto"
+          ],
+          correct: 1,
+          explain: "Esa línea liga el job a las protecciones del Environment: aprobaciones, secrets y reglas de branch."
+        }
+      ]
+    },
+    {
+      id: "nivel3",
+      num: "3",
+      title: "Nivel 3 · Avanzado",
+      sub: "Monorepo, CODEOWNERS, GitHub Projects, estrategias de merge y pipelines CI/CD.",
+      accent: "#8250DF",
+      accentSoft: "rgba(130,80,223,0.15)",
+      questions: [
+        {
+          q: "¿Cuál es una ventaja típica de un monorepo?",
+          options: [
+            "Cada equipo tiene autonomía total sobre su propio repositorio",
+            "Simplifica compartir dependencias y hacer refactors grandes entre proyectos",
+            "Elimina la necesidad de hacer Pull Requests",
+            "No requiere ningún tooling especial"
+          ],
+          correct: 1,
+          explain: "Tener todo en un repo facilita los cambios que cruzan varios proyectos a la vez, a costa de más tooling."
+        },
+        {
+          q: "¿Qué función cumple el archivo CODEOWNERS?",
+          options: [
+            "Define qué personas o equipos deben revisar obligatoriamente ciertos archivos o carpetas",
+            "Lista los colaboradores del repositorio",
+            "Bloquea el acceso a ciertos archivos",
+            "Configura el dominio personalizado del repo"
+          ],
+          correct: 0,
+          explain: "Cuando un PR toca esos archivos, GitHub pide automáticamente la revisión del equipo dueño de esa carpeta."
+        },
+        {
+          q: "En trunk-based development, ¿cómo suelen integrarse los cambios a main?",
+          options: [
+            "Con branches que duran semanas antes de mergear",
+            "En commits chicos y frecuentes, varias veces al día, sin branches de larga duración",
+            "Solo una vez por mes con una gran fusión",
+            "Nunca directamente, siempre por fork"
+          ],
+          correct: 1,
+          explain: "El trunk-based development integra cambios pequeños con mucha frecuencia directo sobre la rama principal."
+        },
+        {
+          q: "¿Para qué se corta una release branch?",
+          options: [
+            "Para borrar el historial de una versión anterior",
+            "Para estabilizar una versión (solo fixes puntuales) mientras main sigue avanzando",
+            "Para reemplazar a main definitivamente",
+            "Para probar código experimental sin ningún control"
+          ],
+          correct: 1,
+          explain: "La release branch congela una versión: solo recibe correcciones puntuales hasta el tag final."
+        },
+        {
+          q: "En la vista de tabla de GitHub Projects, ¿qué permiten los campos personalizados?",
+          options: [
+            "Solo cambiar el color del tablero",
+            "Planificar con datos propios como Prioridad, Iteración o Estimate, además del Kanban",
+            "Ejecutar automáticamente el código del proyecto",
+            "Reemplazar por completo a los Issues"
+          ],
+          correct: 1,
+          explain: "Los campos personalizados suman información de planificación (prioridad, sprint, estimación) a cada tarjeta."
+        },
+        {
+          q: "¿Qué estrategia de merge reescribe cada commit de la branch, uno por uno, al final de main?",
+          options: ["Merge commit", "Squash and merge", "Rebase and merge", "Fast-forward only"],
+          correct: 2,
+          explain: "Rebase and merge reaplica cada commit de la branch sobre main, dejando un historial lineal."
+        },
+        {
+          q: "¿Qué caracteriza a un Draft Pull Request?",
+          options: [
+            "No puede recibir comentarios",
+            "Se abre temprano para compartir avances, sin disparar todavía las revisiones obligatorias",
+            "Se mergea automáticamente sin revisión",
+            "Solo lo pueden crear administradores del repo"
+          ],
+          correct: 1,
+          explain: "Un Draft PR sirve para mostrar avance o pedir feedback temprano, antes de pedir la revisión formal."
+        },
+        {
+          q: "En un pipeline de CI/CD con varias etapas, ¿qué rol cumple una aprobación manual antes de producción?",
+          options: [
+            "Es opcional y no afecta el despliegue",
+            "Actúa como el último gate: nadie puede desplegar a prod sin esa aprobación",
+            "Reemplaza a los tests automáticos",
+            "Solo sirve para notificar por email"
+          ],
+          correct: 1,
+          explain: "La aprobación manual es el último control humano antes de que un cambio llegue a producción."
+        },
+        {
+          q: "¿Qué controla el \"wait timer\" de un Environment avanzado?",
+          options: [
+            "Cuánto tarda en compilar el proyecto",
+            "Un tiempo de espera obligatorio antes de poder ejecutar el deploy a ese ambiente",
+            "La cantidad de secrets permitidos",
+            "El tamaño máximo del repositorio"
+          ],
+          correct: 1,
+          explain: "El wait timer obliga a esperar un tiempo fijo antes de que el deploy a ese ambiente pueda ejecutarse."
+        },
+        {
+          q: "Como tema bonus del roadmap, ¿qué es GitHub Pages?",
+          options: [
+            "Un servicio de base de datos en la nube",
+            "Un hosting gratuito para sitios estáticos, servido directo desde un repositorio",
+            "Una herramienta para hacer code review",
+            "Un tipo de branch protegida"
+          ],
+          correct: 1,
+          explain: "GitHub Pages publica sitios estáticos (como un portafolio) directamente desde un repositorio, sin servidor propio."
+        }
+      ]
+    }
+  ];
+
+  // ---------------------------------------------------------------
+  // Storage helpers (best score per module). Falls back silently.
+  // ---------------------------------------------------------------
+  const memoryFallback = {};
+  async function saveScore(moduleId, score, total){
+    const payload = JSON.stringify({ score, total, at: Date.now() });
+    try{
+      if (window.storage && window.storage.set){
+        const existing = await getScore(moduleId);
+        if (!existing || score >= existing.score){
+          await window.storage.set("score:" + moduleId, payload, false);
+        }
+        return;
+      }
+    }catch(e){ /* fall through to memory */ }
+    const existing = memoryFallback[moduleId];
+    if (!existing || score >= existing.score){
+      memoryFallback[moduleId] = { score, total };
+    }
+  }
+  async function getScore(moduleId){
+    try{
+      if (window.storage && window.storage.get){
+        const res = await window.storage.get("score:" + moduleId, false);
+        if (res && res.value) return JSON.parse(res.value);
+        return null;
+      }
+    }catch(e){ /* not found or unavailable */ }
+    return memoryFallback[moduleId] || null;
+  }
+
+  // ---------------------------------------------------------------
+  // State
+  // ---------------------------------------------------------------
+  let currentModuleIndex = -1;
+  let currentQuestionIndex = 0;
+  let currentScore = 0;
+  let answered = false;
+  let wrongAnswers = [];
+
+  const els = {
+    home: document.getElementById("view-home"),
+    quiz: document.getElementById("view-quiz"),
+    result: document.getElementById("view-result"),
+    modules: document.getElementById("modules"),
+    overallLabel: document.getElementById("overall-label"),
+    segFill: document.getElementById("seg-fill"),
+    quizTag: document.getElementById("quiz-tag"),
+    trail: document.getElementById("trail"),
+    qCount: document.getElementById("q-count"),
+    qText: document.getElementById("q-text"),
+    options: document.getElementById("options"),
+    feedback: document.getElementById("feedback"),
+    fbTitle: document.getElementById("fb-title"),
+    fbText: document.getElementById("fb-text"),
+    btnNext: document.getElementById("btn-next"),
+    btnExit: document.getElementById("btn-exit"),
+    resultTag: document.getElementById("result-tag"),
+    resultScore: document.getElementById("result-score"),
+    resultBadge: document.getElementById("result-badge"),
+    review: document.getElementById("review"),
+    btnRetry: document.getElementById("btn-retry"),
+    btnNextModule: document.getElementById("btn-next-module"),
+    btnMenu: document.getElementById("btn-menu")
+  };
+
+  function showView(name){
+    [els.home, els.quiz, els.result].forEach(v => v.classList.remove("active"));
+    ({home: els.home, quiz: els.quiz, result: els.result})[name].classList.add("active");
+    window.scrollTo({top:0, behavior:"instant" in window ? "instant" : "auto"});
+  }
+
+  function setAccent(hex, soft){
+    document.documentElement.style.setProperty("--accent", hex);
+    document.documentElement.style.setProperty("--accent-soft", soft);
+  }
+
+  // ---------------------------------------------------------------
+  // Home rendering
+  // ---------------------------------------------------------------
+  async function renderHome(){
+    els.modules.innerHTML = "";
+    let completed = 0;
+
+    for (let i = 0; i < MODULES.length; i++){
+      const m = MODULES[i];
+      const best = await getScore(m.id);
+      if (best) completed++;
+
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="num" style="background:${m.accent}">${m.num}</div>
+        <h3>${m.title}</h3>
+        <p class="card-sub">${m.sub}</p>
+        <div class="meta">
+          <span>${m.questions.length} preguntas</span>
+          <span class="best">${best ? "Mejor puntaje: " + best.score + "/" + best.total : "Sin intentos aún"}</span>
+        </div>
+        <button class="btn btn-primary" style="background:${m.accent}" data-index="${i}">
+          ${best ? "Reintentar" : "Comenzar"}
+        </button>
+      `;
+      card.querySelector("button").addEventListener("click", () => startModule(i));
+      els.modules.appendChild(card);
+    }
+
+    els.overallLabel.textContent = completed + " / " + MODULES.length + " módulos completados";
+    els.segFill.style.width = Math.round((completed / MODULES.length) * 100) + "%";
+    els.segFill.style.background = completed === MODULES.length ? "#3FB950" : "#8B949E";
+  }
+
+  // ---------------------------------------------------------------
+  // Quiz flow
+  // ---------------------------------------------------------------
+  function startModule(index){
+    currentModuleIndex = index;
+    currentQuestionIndex = 0;
+    currentScore = 0;
+    wrongAnswers = [];
+    const m = MODULES[index];
+    setAccent(m.accent, m.accentSoft);
+    els.quizTag.textContent = m.title;
+    els.quizTag.style.borderColor = m.accent;
+    renderTrail();
+    renderQuestion();
+    showView("quiz");
+  }
+
+  function renderTrail(){
+    const m = MODULES[currentModuleIndex];
+    els.trail.innerHTML = "";
+    m.questions.forEach((q, i) => {
+      const node = document.createElement("div");
+      node.className = "node";
+      if (i === currentQuestionIndex) node.classList.add("current");
+      els.trail.appendChild(node);
+      if (i < m.questions.length - 1){
+        const line = document.createElement("div");
+        line.className = "line";
+        if (i < currentQuestionIndex) line.classList.add("done");
+        els.trail.appendChild(line);
+      }
+    });
+  }
+
+  function markTrailNode(index, isCorrect){
+    const nodes = els.trail.querySelectorAll(".node");
+    nodes[index].classList.remove("current");
+    nodes[index].classList.add(isCorrect ? "correct" : "incorrect");
+  }
+
+  function renderQuestion(){
+    const m = MODULES[currentModuleIndex];
+    const q = m.questions[currentQuestionIndex];
+    answered = false;
+
+    els.qCount.textContent = "Pregunta " + (currentQuestionIndex + 1) + " de " + m.questions.length;
+    els.qText.textContent = q.q;
+    els.options.innerHTML = "";
+    els.feedback.classList.remove("show", "ok", "no");
+    els.btnNext.style.display = "none";
+
+    const letters = ["A", "B", "C", "D"];
+    q.options.forEach((optText, i) => {
+      const btn = document.createElement("button");
+      btn.className = "opt";
+      btn.innerHTML = `<span class="letter">${letters[i]}</span><span>${optText}</span>`;
+      btn.addEventListener("click", () => selectOption(i, btn));
+      els.options.appendChild(btn);
+    });
+  }
+
+  function selectOption(i, btnEl){
+    if (answered) return;
+    answered = true;
+    const m = MODULES[currentModuleIndex];
+    const q = m.questions[currentQuestionIndex];
+    const isCorrect = i === q.correct;
+
+    const allOpts = els.options.querySelectorAll(".opt");
+    allOpts.forEach(o => o.classList.add("locked"));
+
+    if (isCorrect){
+      btnEl.classList.add("selected-correct");
+      currentScore++;
+    } else {
+      btnEl.classList.add("selected-incorrect");
+      allOpts[q.correct].classList.add("reveal-correct");
+      wrongAnswers.push({
+        question: q.q,
+        correctText: q.options[q.correct],
+        explain: q.explain
+      });
+    }
+
+    els.feedback.classList.add("show", isCorrect ? "ok" : "no");
+    els.fbTitle.textContent = isCorrect ? "Correcto" : "No es esa";
+    els.fbText.textContent = q.explain;
+
+    markTrailNode(currentQuestionIndex, isCorrect);
+    els.btnNext.style.display = "inline-block";
+    els.btnNext.textContent = (currentQuestionIndex === m.questions.length - 1) ? "Ver resultado" : "Siguiente";
+  }
+
+  els.btnNext.addEventListener("click", () => {
+    const m = MODULES[currentModuleIndex];
+    if (currentQuestionIndex < m.questions.length - 1){
+      currentQuestionIndex++;
+      renderTrail();
+      renderQuestion();
+    } else {
+      finishModule();
+    }
+  });
+
+  els.btnExit.addEventListener("click", () => {
+    showView("home");
+    renderHome();
+  });
+
+  // ---------------------------------------------------------------
+  // Result
+  // ---------------------------------------------------------------
+  async function finishModule(){
+    const m = MODULES[currentModuleIndex];
+    const total = m.questions.length;
+    await saveScore(m.id, currentScore, total);
+
+    els.resultTag.innerHTML = `<strong style="color:${m.accent}">${m.title}</strong> · resultado`;
+    els.resultScore.innerHTML = currentScore + '<span>/' + total + '</span>';
+
+    const pct = currentScore / total;
+    let badgeText, badgeColor;
+    if (pct >= 0.8){ badgeText = "Excelente dominio"; badgeColor = "#3FB950"; }
+    else if (pct >= 0.5){ badgeText = "Bien, casi lo dominás"; badgeColor = "#D29922"; }
+    else { badgeText = "Convendría repasar este nivel"; badgeColor = "#F85149"; }
+    els.resultBadge.textContent = badgeText;
+    els.resultBadge.style.background = badgeColor + "22";
+    els.resultBadge.style.color = badgeColor;
+    els.resultBadge.style.border = "1px solid " + badgeColor;
+
+    els.review.innerHTML = "";
+    if (wrongAnswers.length === 0){
+      const p = document.createElement("p");
+      p.style.color = "#8B949E";
+      p.style.fontSize = "0.9rem";
+      p.textContent = "Respondiste todo correctamente. Nada para repasar en este módulo.";
+      els.review.appendChild(p);
+    } else {
+      wrongAnswers.forEach(w => {
+        const div = document.createElement("div");
+        div.className = "review-item";
+        div.innerHTML = `
+          <p class="rq">${w.question}</p>
+          <p class="ra">Respuesta correcta: <strong>${w.correctText}</strong> — ${w.explain}</p>
+        `;
+        els.review.appendChild(div);
+      });
+    }
+
+    const isLast = currentModuleIndex === MODULES.length - 1;
+    els.btnNextModule.style.display = isLast ? "none" : "inline-block";
+
+    showView("result");
+  }
+
+  els.btnRetry.addEventListener("click", () => startModule(currentModuleIndex));
+  els.btnNextModule.addEventListener("click", () => startModule(currentModuleIndex + 1));
+  els.btnMenu.addEventListener("click", () => { showView("home"); renderHome(); });
+
+  // ---------------------------------------------------------------
+  // Init
+  // ---------------------------------------------------------------
+  renderHome();
+})();
+</script>
+</body>
+</html>
